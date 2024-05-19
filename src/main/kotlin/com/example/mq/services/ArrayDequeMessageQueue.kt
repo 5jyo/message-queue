@@ -10,7 +10,11 @@ class ArrayDequeMessageQueue: MessageQueueInterface {
         queue.add(message)
     }
 
-    override fun consume(): String {
+    override fun consume(): String? {
+        if (queue.isEmpty()) {
+            return null
+        }
+
         return queue.removeFirst()
     }
 }

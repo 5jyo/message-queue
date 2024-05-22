@@ -1,3 +1,9 @@
 spring:
   application:
     name: message-queue
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

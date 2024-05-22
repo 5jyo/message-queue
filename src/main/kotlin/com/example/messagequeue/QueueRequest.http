@@ -1,0 +1,11 @@
+###
+POST http://localhost:8080/enqueue
+Content-Type: application/json
+
+{
+  "message": "test"
+}
+
+###
+GET http://localhost:8080/dequeue
+Content-Type: application/json

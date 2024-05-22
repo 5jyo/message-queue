@@ -1,5 +1,8 @@
 package com.example.messagequeue.queue
 
+import org.springframework.stereotype.Component
+
+@Component
 class Queue {
     private val queue = mutableListOf<String>()
 

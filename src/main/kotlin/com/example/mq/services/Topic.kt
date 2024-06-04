@@ -1,6 +1,6 @@
 package com.example.mq.services
 
-interface MessageQueueInterface {
+interface Topic {
     fun produce(message: String)
     fun consume(): String?
 }

@@ -1,0 +1,24 @@
+###
+POST http://localhost:8080/produce
+Content-Type: application/json
+
+{
+  "topicId": "test",
+  "message": "1"
+}
+
+###
+POST http://localhost:8080/topics
+Content-Type: application/json
+
+{
+  "topicId": "test"
+}
+
+###
+POST http://localhost:8080/consume
+Content-Type: application/json
+
+{
+  "topicId": "test"
+}

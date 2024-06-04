@@ -3,7 +3,7 @@ package com.example.mq.services
 import org.springframework.stereotype.Service
 
 @Service
-class ArrayDequeMessageQueue: MessageQueueInterface {
+class ArrayDequeMessageQueue: Topic {
     private val queue = ArrayDeque<String>()
 
     override fun produce(message: String) {

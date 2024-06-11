@@ -9,12 +9,16 @@ class TopicManager : Producible, Consumable {
 
     override fun produce(event: Event) {
         val topic = topicToQueueMap[event.topicId] ?: throw IllegalArgumentException("Topic not found")
-        topic.add(event)
+        synchronized(topic) {
+            topic.add(event)
+        }
     }
 
     override fun consume(topicId: String): Event? {
         val topic = topicToQueueMap[topicId] ?: throw IllegalArgumentException("Topic not found")
-        return topic.removeFirstOrNull()
+        synchronized(topic) {
+            return topic.removeFirstOrNull()
+        }
     }
 
     fun addTopic(topicId: String) {
@@ -28,5 +32,9 @@ class TopicManager : Producible, Consumable {
     // TODO: topic안에 Event가 없는 경우만 허용할지?
     fun removeTopic(topicId: String) {
         topicToQueueMap.remove(topicId)
+    }
+
+    fun topicSize(topicId: String): Int {
+        return topicToQueueMap[topicId]?.size ?: 0
     }
 }

@@ -4,7 +4,9 @@ import com.example.messagequeue.model.Event
 import org.springframework.stereotype.Component
 
 @Component
-class TopicManager : Producible, Consumable {
+class TopicManager(
+    private val offsetManager: OffsetManager,
+) : Producible, Consumable {
     private val topicToQueueMap = mutableMapOf<String, MutableList<Event>>()
 
     override fun produce(event: Event) {
@@ -38,7 +40,14 @@ class TopicManager : Producible, Consumable {
         return topicToQueueMap[topicId]?.size ?: 0
     }
 
-    fun commit(topicId: String, consumerId: String) {
-        TODO("NEED TO IMPLEMENT")
+    fun commit(topicId: String, consumerId: String): Int {
+        require(isValidTopicId(topicId)) { "Unregistered consumer $consumerId" }
+
+        return offsetManager.commit(
+            topicId = topicId,
+            consumerId = consumerId
+        )
     }
+
+    private fun isValidTopicId(topicId: String) = topicToQueueMap.containsKey(topicId)
 }

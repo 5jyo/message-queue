@@ -37,4 +37,8 @@ class TopicManager : Producible, Consumable {
     fun topicSize(topicId: String): Int {
         return topicToQueueMap[topicId]?.size ?: 0
     }
+
+    fun commit(topicId: String, consumerId: String) {
+        TODO("NEED TO IMPLEMENT")
+    }
 }

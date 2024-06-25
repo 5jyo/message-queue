@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class MessageQueueApplication
 
 fun main(args: Array<String>) {
-	runApplication<MessageQueueApplication>(*args)
+    runApplication<MessageQueueApplication>(*args)
 }

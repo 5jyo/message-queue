@@ -1,0 +1,8 @@
+###
+POST http://localhost:8080/commit
+Content-Type: application/json
+
+{
+  "topicId": "topicId",
+  "consumerId": "consumerId"
+}

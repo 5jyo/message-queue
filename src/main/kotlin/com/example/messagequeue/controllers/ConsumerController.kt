@@ -5,7 +5,6 @@ import com.example.messagequeue.model.Event
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -23,19 +22,23 @@ class ConsumerController(
 
     @PostMapping("/commit")
     fun commit(
-        @RequestParam topicId: String,
-        @RequestParam consumerId: String,
+        @RequestBody request: CommitRequest,
     ): CommitResponse {
         topicManager.commit(
-            topicId = topicId,
-            consumerId = consumerId,
+            topicId = request.topicId,
+            consumerId = request.consumerId,
         )
 
         return CommitResponse(
-            topicId = topicId,
-            consumerId = consumerId
+            topicId = request.topicId,
+            consumerId = request.consumerId,
         )
     }
+
+    data class CommitRequest(
+        val topicId: String,
+        val consumerId: String,
+    )
 
     data class CommitResponse(
         val topicId: String,

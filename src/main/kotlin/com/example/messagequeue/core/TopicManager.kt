@@ -14,7 +14,7 @@ class TopicManager : Producible, Consumable {
         }
     }
 
-    override fun consume(topicId: String): Event? {
+    override fun consume(topicId: String, consumerId: String): Event? {
         val topic = topicToQueueMap[topicId] ?: throw IllegalArgumentException("Topic not found")
         synchronized(topic) {
             return topic.removeFirstOrNull()

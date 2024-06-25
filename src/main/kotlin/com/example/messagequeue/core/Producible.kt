@@ -1,6 +1,6 @@
-package com.example.mq.core
+package com.example.messagequeue.core
 
-import com.example.mq.model.Event
+import com.example.messagequeue.model.Event
 
 // TODO: 시스템 외부의 Producer 와 개념이 겹치지 않나?
 fun interface Producible {

@@ -1,7 +1,7 @@
-package com.example.mq.controllers
+package com.example.messagequeue.controllers
 
-import com.example.mq.core.Consumable
-import com.example.mq.model.Event
+import com.example.messagequeue.core.Consumable
+import com.example.messagequeue.model.Event
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
-class ConsumerController (
-    private val messageQueue: Consumable
+class ConsumerController(
+    private val messageQueue: Consumable,
 ) {
     @PostMapping("/consume")
     fun consume(@RequestBody requestForm: RequestForm): Event {
@@ -21,6 +21,6 @@ class ConsumerController (
     }
 
     data class RequestForm(
-        val topicId: String
+        val topicId: String,
     )
 }

@@ -1,7 +1,7 @@
 package com.example.messagequeue.test
 
-import com.example.mq.core.TopicManager
-import com.example.mq.model.Event
+import com.example.messagequeue.core.TopicManager
+import com.example.messagequeue.model.Event
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import java.util.concurrent.Executors

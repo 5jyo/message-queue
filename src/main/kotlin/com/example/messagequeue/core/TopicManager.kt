@@ -1,6 +1,6 @@
-package com.example.mq.core
+package com.example.messagequeue.core
 
-import com.example.mq.model.Event
+import com.example.messagequeue.model.Event
 import org.springframework.stereotype.Component
 
 @Component

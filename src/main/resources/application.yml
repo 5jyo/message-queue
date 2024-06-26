@@ -7,3 +7,44 @@ management:
     web:
       exposure:
         include: "*"
+
+#{
+#  "cluster": [
+#    {
+#      "host": "localhost",
+#      "masterYn": "Y",
+#      "id": 1,
+#      "port": 8080
+#    },
+#    {
+#      "host": "localhost",
+#      "masterYn": "N",
+#      "id": 2,
+#      "port": 8081
+#    },
+#    {
+#      "host": "localhost",
+#      "masterYn": "N",
+#      "id": 3,
+#      "port": 8082
+#    }
+#  ]
+#}
+
+cluster:
+  nodes:
+  - id: 1
+    role: LEADER
+    host: localhost
+    port: 8083
+  - id: 2
+    role: FOLLOWER
+    host: localhost
+    port: 8081
+  - id: 3
+    role: FOLLOWER
+    host: localhost
+    port: 8082
+
+node:
+  id: 1

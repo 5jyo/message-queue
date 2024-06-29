@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/cluster")
 class HealthCheckController {
     @GetMapping("/health")
-    fun giveHeartBeat(): String = "OK"
+    fun health(): String = "OK"
 }

@@ -17,19 +17,19 @@ class HeartbeatScheduler(
     class HeartbeatFailureException : RuntimeException()
 
     @Scheduled(fixedRate = 500)
-    fun sendHeartBeat() {
+    fun checkHeartbeatOfFollowers() {
         if (!clusterManager.isCurrentNodeMaster()) {
             return
         }
 
         clusterManager.getFollowers().forEach { node: Node ->
-            sendHeartbeat(node).onFailure {
+            checkHealth(node).onFailure {
                 log.error { "heartbeat failed for ${node.id} child" }
             }
         }
     }
 
-    private fun sendHeartbeat(it: Node): Result<Unit> =
+    private fun checkHealth(it: Node): Result<Unit> =
         runCatching {
             RestTemplate()
                 .getForEntity("http://${it.host}:${it.port}/cluster/health", String::class.java)

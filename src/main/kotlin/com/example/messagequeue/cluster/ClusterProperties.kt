@@ -7,16 +7,11 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "cluster")
 class ClusterProperties {
     var nodes: List<NodeConfig> = emptyList()
-}
 
-data class NodeConfig(
-    val host: String,
-    val port: Int,
-    val id: String,
-    val role: RoleConfig,
-)
-
-enum class RoleConfig {
-    LEADER,
-    FOLLOWER,
+    data class NodeConfig(
+        val host: String,
+        val port: String,
+        val id: String,
+        val role: String,
+    )
 }

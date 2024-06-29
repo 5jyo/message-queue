@@ -8,29 +8,6 @@ management:
       exposure:
         include: "*"
 
-#{
-#  "cluster": [
-#    {
-#      "host": "localhost",
-#      "masterYn": "Y",
-#      "id": 1,
-#      "port": 8080
-#    },
-#    {
-#      "host": "localhost",
-#      "masterYn": "N",
-#      "id": 2,
-#      "port": 8081
-#    },
-#    {
-#      "host": "localhost",
-#      "masterYn": "N",
-#      "id": 3,
-#      "port": 8082
-#    }
-#  ]
-#}
-
 cluster:
   nodes:
   - id: 1

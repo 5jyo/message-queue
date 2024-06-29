@@ -1,10 +1,12 @@
-package com.example.mq.core
+package com.example.messagequeue.core
 
-import com.example.mq.model.Event
+import com.example.messagequeue.model.Event
 import org.springframework.stereotype.Component
 
 @Component
-class TopicManager : Producible, Consumable {
+class TopicManager :
+    Producible,
+    Consumable {
     private val topicToQueueMap = mutableMapOf<String, MutableList<Event>>()
 
     override fun produce(event: Event) {
@@ -25,16 +27,12 @@ class TopicManager : Producible, Consumable {
         topicToQueueMap[topicId] = mutableListOf()
     }
 
-    fun hasTopic(topicId: String): Boolean {
-        return topicToQueueMap.containsKey(topicId)
-    }
+    fun hasTopic(topicId: String): Boolean = topicToQueueMap.containsKey(topicId)
 
     // TODO: topic안에 Event가 없는 경우만 허용할지?
     fun removeTopic(topicId: String) {
         topicToQueueMap.remove(topicId)
     }
 
-    fun topicSize(topicId: String): Int {
-        return topicToQueueMap[topicId]?.size ?: 0
-    }
+    fun topicSize(topicId: String): Int = topicToQueueMap[topicId]?.size ?: 0
 }

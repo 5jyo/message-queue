@@ -3,6 +3,11 @@ package com.example.messagequeue.cluster
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
+// 역할: Node 주소와 Status를 관리
+// 상호작용
+// TopicDispatcher <- 토픽 생성 요청 시 어느 node에 위치하는지 배분
+// MessageDispatcher <- 어떤 노드가 살아있고, 메시지 보낼 수 있는지
+// HeartBeatScheduler <- healthcheck를 통한 노드 상태 업데이트
 @Service
 class ClusterManager(
     clusterProperties: ClusterProperties,
@@ -18,5 +23,34 @@ class ClusterManager(
 
     fun isCurrentNodeMaster(): Boolean = this.getMaster().id == currentNodeId
 
-    fun getFollowers(): List<Node> = nodes.filter { !it.isLeader() }
+    fun getAddresses(): List<NodeAddress> = nodes.map { NodeAddress(it.id, it.host, it.port) }
+
+    fun setNodeToHealthy(nodeId: String) {
+        val node =
+            nodes.find { node ->
+                node.id == nodeId
+            }
+        node?.markAsHealthy()
+    }
+
+    fun setNodeToUnhealthy(nodeId: String) {
+        val node =
+            nodes.find { node ->
+                node.id == nodeId
+            }
+        node?.markAsUnhealthy()
+    }
+
+    // TEMP
+    fun reportStatus() {
+        nodes.forEach {
+            println(it)
+        }
+    }
+
+    data class NodeAddress(
+        val id: String,
+        val host: String,
+        val port: String,
+    )
 }

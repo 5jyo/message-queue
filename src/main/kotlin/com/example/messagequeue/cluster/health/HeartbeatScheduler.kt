@@ -1,7 +1,6 @@
 package com.example.messagequeue.cluster.health
 
 import com.example.messagequeue.cluster.ClusterManager
-import com.example.messagequeue.cluster.Node
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,14 +21,20 @@ class HeartbeatScheduler(
             return
         }
 
-        clusterManager.getFollowers().forEach { node: Node ->
-            checkHealth(node).onFailure {
-                log.error { "heartbeat failed for ${node.id} child" }
-            }
+        clusterManager.getAddresses().forEach { address: ClusterManager.NodeAddress ->
+            checkHealth(address)
+                .onFailure {
+                    log.error { "heartbeat failed for ${address.id} child" }
+                    clusterManager.setNodeToUnhealthy(address.id)
+                }.onSuccess {
+                    clusterManager.setNodeToHealthy(address.id)
+                }
         }
+
+        clusterManager.reportStatus()
     }
 
-    private fun checkHealth(it: Node): Result<Unit> =
+    private fun checkHealth(it: ClusterManager.NodeAddress): Result<Unit> =
         runCatching {
             RestTemplate()
                 .getForEntity("http://${it.host}:${it.port}/cluster/health", String::class.java)

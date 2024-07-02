@@ -32,6 +32,8 @@ class Node(
         this.status = Status.UNHEALTHY
     }
 
+    override fun toString(): String = "Node(id='$id', host='$host', port='$port', role=$role, status=$status)"
+
     enum class RoleConfig {
         LEADER,
         FOLLOWER,

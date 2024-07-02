@@ -14,11 +14,3 @@ Content-Type: application/json
 {
   "topicId": "test"
 }
-
-###
-POST http://localhost:8080/consume
-Content-Type: application/json
-
-{
-  "topicId": "test"
-}

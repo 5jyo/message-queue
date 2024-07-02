@@ -1,5 +1,6 @@
 package com.example.messagequeue.controllers
 
+import com.example.messagequeue.cluster.ClusterManager
 import com.example.messagequeue.core.TopicManager
 import com.example.messagequeue.model.Event
 import org.springframework.web.bind.annotation.PostMapping
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ProducerController(
     private val topicManager: TopicManager,
+    private val clusterManager: ClusterManager,
 ) {
     @PostMapping("/produce")
     fun produce(
@@ -21,7 +23,7 @@ class ProducerController(
     @PostMapping("/topics")
     fun createTopic(
         @RequestBody topicCreationForm: TopicCreationForm,
-    ) = topicManager.addTopic(topicCreationForm.topicId)
+    ) = clusterManager.routingTopic(topicCreationForm.topicId)
 
     data class TopicCreationForm(
         val topicId: String,

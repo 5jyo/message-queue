@@ -1,5 +1,7 @@
 package com.example.messagequeue.cluster
 
+import com.example.messagequeue.client.TopicClient
+import com.example.messagequeue.core.TopicManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Service
 @Service
 class ClusterManager(
     clusterProperties: ClusterProperties,
+    private val topicManager: TopicManager,
     @Value("\${node.id}") private val currentNodeId: String,
+    private val topicClient: TopicClient,
 ) {
     private val nodes: List<Node> = clusterProperties.nodes.map { Node.from(it) }
 
@@ -45,6 +49,20 @@ class ClusterManager(
     fun reportStatus() {
         nodes.forEach {
             println(it)
+        }
+    }
+
+    fun createTopic(topicName: String) {
+        // TODO: Global topic manager?
+        topicManager.addTopic(topicName)
+    }
+
+    fun routingTopic(topicName: String) {
+        if (this.isCurrentNodeMaster()) {
+            // routing algorithm and forward
+            topicClient.test()
+        } else {
+            // forward to master
         }
     }
 

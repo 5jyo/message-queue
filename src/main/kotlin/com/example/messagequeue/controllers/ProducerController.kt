@@ -11,15 +11,17 @@ class ProducerController(
     private val topicManager: TopicManager,
 ) {
     @PostMapping("/produce")
-    fun produce(@RequestBody requestForm: RequestForm) {
+    fun produce(
+        @RequestBody requestForm: RequestForm,
+    ) {
         val event = Event.create(requestForm.topicId, requestForm.message)
         return topicManager.produce(event)
     }
 
     @PostMapping("/topics")
-    fun createTopic(@RequestBody topicCreationForm: TopicCreationForm) {
-        return topicManager.addTopic(topicCreationForm.topicId)
-    }
+    fun createTopic(
+        @RequestBody topicCreationForm: TopicCreationForm,
+    ) = topicManager.addTopic(topicCreationForm.topicId)
 
     data class TopicCreationForm(
         val topicId: String,

@@ -18,8 +18,9 @@ class TopicManager(
 
     override fun consume(topicId: String, consumerId: String): Event? {
         val topic = topicToQueueMap[topicId] ?: throw IllegalArgumentException("Topic not found")
+        val offset = offsetManager.getOffset(consumerId, topicId)
         synchronized(topic) {
-            return topic.removeFirstOrNull()
+            return topic[offset]
         }
     }
 
@@ -43,7 +44,7 @@ class TopicManager(
     fun commit(topicId: String, consumerId: String): Int {
         require(isValidTopicId(topicId)) { "Unregistered consumer $consumerId" }
 
-        return offsetManager.commit(
+        return offsetManager.increment(
             topicId = topicId,
             consumerId = consumerId
         )

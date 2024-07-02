@@ -7,11 +7,16 @@ import java.util.concurrent.atomic.AtomicInteger
 class OffsetManager {
     private val offsets = mutableMapOf<Pair<String, String>, AtomicInteger>()
 
-    fun commit(consumerId: String, topicId: String): Int {
+    fun increment(consumerId: String, topicId: String): Int {
         val offsetKey = Pair(consumerId, topicId)
         val offset = offsets[offsetKey] ?: throw RuntimeException("Invalid key, $topicId, $consumerId")
 
         return offset.incrementAndGet()
+    }
+
+    fun getOffset(consumerId: String, topicId: String): Int {
+        val offsetKey = Pair(consumerId, topicId)
+        return offsets.getOrPut(offsetKey) { AtomicInteger(0) }.get()
     }
 }
 

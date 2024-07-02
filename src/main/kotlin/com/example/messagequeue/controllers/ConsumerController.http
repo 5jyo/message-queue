@@ -6,3 +6,12 @@ Content-Type: application/json
   "topicId": "topicId",
   "consumerId": "consumerId"
 }
+
+###
+POST http://localhost:8080/consume
+Content-Type: application/json
+
+{
+  "topicId": "topicId",
+  "consumerId": "consumerId"
+}

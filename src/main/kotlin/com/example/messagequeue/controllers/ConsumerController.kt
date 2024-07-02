@@ -29,7 +29,7 @@ class ConsumerController(
     fun commit(
         @RequestBody request: CommitRequest,
     ): CommitResponse {
-        topicManager.commit(
+        val next = topicManager.commit(
             topicId = request.topicId,
             consumerId = request.consumerId,
         )
@@ -37,6 +37,7 @@ class ConsumerController(
         return CommitResponse(
             topicId = request.topicId,
             consumerId = request.consumerId,
+            next = next,
         )
     }
 
@@ -49,6 +50,7 @@ class ConsumerController(
         val topicId: String,
         val consumerId: String,
         val message: String = "OK",
+        val next: Int,
     )
 
     data class ConsumeRequest(

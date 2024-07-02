@@ -20,6 +20,7 @@ class TopicManager(
         val topic = topicToQueueMap[topicId] ?: throw IllegalArgumentException("Topic not found")
         val offset = offsetManager.getOffset(consumerId, topicId)
         synchronized(topic) {
+            check(offset < topic.size) { "No more messages to consume" }
             return topic[offset]
         }
     }

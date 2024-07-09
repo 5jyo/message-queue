@@ -1,15 +1,18 @@
 package com.example.messagequeue.cluster
 
 import com.example.messagequeue.client.TopicClient
+import com.example.messagequeue.cluster.client.EventClient
 import com.example.messagequeue.controllers.ProducerController
 import com.example.messagequeue.core.TopicManager
 import com.example.messagequeue.core.TopicRouter
+import com.example.messagequeue.model.Event
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
+import org.springframework.web.util.DefaultUriBuilderFactory
 
 // 역할: Node 주소와 Status를 관리
 // 상호작용
@@ -20,7 +23,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory
 class ClusterManager(
     clusterProperties: ClusterProperties,
     private val topicManager: TopicManager,
-    private val topicClient: TopicClient,
+    private val eventClient: EventClient,
     private val topicRouter: TopicRouter,
     @Value("\${node.id}") private val currentNodeId: String,
 ) {
@@ -88,6 +91,37 @@ class ClusterManager(
             log.info("Forwarding topic to leader: ${getMaster().id}")
             client.createTopicInCluster(ProducerController.TopicCreationForm(topicName))
         }
+    }
+
+    fun routingEvent(event: Event) {
+        if (this.isCurrentNodeMaster()) {
+            // 처리할 대상 노드 찾아 보내기
+            // getNode() 로 처리할 대상 노드 찾기
+            // 해당 노드에게 보내기
+            val node = topicRouter.getNode(event.topicId)
+            if (node.isLeader()) {
+                createEvent(event)
+            } else {
+                // 처리할 노드로 routing 하기
+                val targetNodeBaseUrl = "${node.host}:${node.port}"
+                eventClient.create(
+                    factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                    event = event,
+                )
+            }
+        } else {
+            // forward to master
+            val node = getMaster()
+            val targetNodeBaseUrl = "${node.host}:${node.port}"
+            eventClient.route(
+                factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                event = event,
+            )
+        }
+    }
+
+    fun createEvent(event: Event) {
+        topicManager.produce(event)
     }
 
     private fun getClientForNode(node: Node): TopicClient {

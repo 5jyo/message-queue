@@ -1,12 +1,21 @@
 package com.example.messagequeue.cluster
 
+import com.example.messagequeue.client.TopicClient
+import com.example.messagequeue.core.TopicManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
+// 역할: Node 주소와 Status를 관리
+// 상호작용
+// TopicDispatcher <- 토픽 생성 요청 시 어느 node에 위치하는지 배분
+// MessageDispatcher <- 어떤 노드가 살아있고, 메시지 보낼 수 있는지
+// HeartBeatScheduler <- healthcheck를 통한 노드 상태 업데이트
 @Service
 class ClusterManager(
     clusterProperties: ClusterProperties,
+    private val topicManager: TopicManager,
     @Value("\${node.id}") private val currentNodeId: String,
+    private val topicClient: TopicClient,
 ) {
     private val nodes: List<Node> = clusterProperties.nodes.map { Node.from(it) }
 
@@ -18,29 +27,48 @@ class ClusterManager(
 
     fun isCurrentNodeMaster(): Boolean = this.getMaster().id == currentNodeId
 
-    fun getFollowers(): List<Node> = nodes.filter { !it.isLeader() }
-}
+    fun getAddresses(): List<NodeAddress> = nodes.map { NodeAddress(it.id, it.host, it.port) }
 
-class Node(
-    val id: String,
-    val host: String,
-    val port: String,
-    private val role: RoleConfig,
-) {
-    companion object {
-        fun from(nodeConfig: ClusterProperties.NodeConfig): Node =
-            Node(
-                nodeConfig.id,
-                nodeConfig.host,
-                nodeConfig.port,
-                RoleConfig.valueOf(nodeConfig.role),
-            )
+    fun setNodeToHealthy(nodeId: String) {
+        val node =
+            nodes.find { node ->
+                node.id == nodeId
+            }
+        node?.markAsHealthy()
     }
 
-    fun isLeader(): Boolean = this.role == RoleConfig.LEADER
-
-    enum class RoleConfig {
-        LEADER,
-        FOLLOWER,
+    fun setNodeToUnhealthy(nodeId: String) {
+        val node =
+            nodes.find { node ->
+                node.id == nodeId
+            }
+        node?.markAsUnhealthy()
     }
+
+    // TEMP
+    fun reportStatus() {
+        nodes.forEach {
+            println(it)
+        }
+    }
+
+    fun createTopic(topicName: String) {
+        // TODO: Global topic manager?
+        topicManager.addTopic(topicName)
+    }
+
+    fun routingTopic(topicName: String) {
+        if (this.isCurrentNodeMaster()) {
+            // routing algorithm and forward
+            topicClient.test()
+        } else {
+            // forward to master
+        }
+    }
+
+    data class NodeAddress(
+        val id: String,
+        val host: String,
+        val port: String,
+    )
 }

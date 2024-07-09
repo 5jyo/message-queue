@@ -13,7 +13,7 @@ cluster:
   - id: 1
     role: LEADER
     host: localhost
-    port: 8083
+    port: 8080
   - id: 2
     role: FOLLOWER
     host: localhost

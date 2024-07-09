@@ -2,6 +2,7 @@ package com.example.messagequeue.test
 
 import com.example.messagequeue.core.OffsetManager
 import com.example.messagequeue.core.TopicManager
+import com.example.messagequeue.infrastructure.MemoryOffsetRepository
 import com.example.messagequeue.model.Event
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
@@ -11,7 +12,7 @@ class KotestUseTest :
     BehaviorSpec({
         context("multi thread setting") {
             Given("100 threads") {
-                val manager = TopicManager(OffsetManager())
+                val manager = TopicManager(OffsetManager(MemoryOffsetRepository()))
                 val iterationCount = 100_000
                 val threadCount = 100
                 val experimentCount = 20
@@ -47,7 +48,7 @@ class KotestUseTest :
                 }
             }
             Given("100,000 events") {
-                val manager = TopicManager(OffsetManager())
+                val manager = TopicManager(OffsetManager(MemoryOffsetRepository()))
                 val topicId = "test-topic"
                 val experimentCount = 20
                 val iterationCount = 100_000

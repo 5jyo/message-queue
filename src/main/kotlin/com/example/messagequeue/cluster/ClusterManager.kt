@@ -4,13 +4,12 @@ import com.example.messagequeue.client.TopicClient
 import com.example.messagequeue.controllers.ProducerController
 import com.example.messagequeue.core.TopicManager
 import com.example.messagequeue.core.TopicRouter
-import com.example.messagequeue.core.TopicRouterImpl
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
-import java.time.LocalDate
 
 // 역할: Node 주소와 Status를 관리
 // 상호작용
@@ -26,6 +25,7 @@ class ClusterManager(
     @Value("\${node.id}") private val currentNodeId: String,
 ) {
     private val nodes: List<Node> = clusterProperties.nodes.map { Node.from(it) }
+    private val log = KotlinLogging.logger {}
 
     class NodeNotFoundException(
         message: String,
@@ -70,21 +70,22 @@ class ClusterManager(
     fun routingTopic(topicName: String) {
         if (this.isCurrentNodeMaster()) {
             if (topicRouter.doesTopicExist(topicName)) {
-                println(LocalDate.now().toString() + " Topic already exists in cluster")
+                log.info("Topic already exists in cluster")
                 throw IllegalArgumentException("Topic already exists in cluster")
             }
 
             // routing algorithm and forward
             val availableNodes = nodes.filter { it.isAvailable() }
             val node = availableNodes[topicName.hashCode() % availableNodes.size]
-            println(LocalDate.now().toString() + " Routing topic to node: ${node.id}")
+            log.info("Routing topic to node: ${node.id}")
+
             val client = getClientForNode(node)
             client.createTopicInNode(ProducerController.TopicCreationForm(topicName))
             topicRouter.saveTopicToNodeMapping(topicName, node)
         } else {
             // Forward request to leader
             val client = getClientForNode(getMaster())
-            println(LocalDate.now().toString() + " Forwarding topic to leader: ${getMaster().id}")
+            log.info("Forwarding topic to leader: ${getMaster().id}")
             client.createTopicInCluster(ProducerController.TopicCreationForm(topicName))
         }
     }

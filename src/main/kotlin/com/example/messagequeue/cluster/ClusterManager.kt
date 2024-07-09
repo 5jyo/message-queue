@@ -3,6 +3,8 @@ package com.example.messagequeue.cluster
 import com.example.messagequeue.client.TopicClient
 import com.example.messagequeue.controllers.ProducerController
 import com.example.messagequeue.core.TopicManager
+import com.example.messagequeue.core.TopicRouter
+import com.example.messagequeue.core.TopicRouterImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -20,6 +22,7 @@ class ClusterManager(
     clusterProperties: ClusterProperties,
     private val topicManager: TopicManager,
     private val topicClient: TopicClient,
+    private val topicRouter: TopicRouter,
     @Value("\${node.id}") private val currentNodeId: String,
 ) {
     private val nodes: List<Node> = clusterProperties.nodes.map { Node.from(it) }
@@ -67,11 +70,11 @@ class ClusterManager(
     fun routingTopic(topicName: String) {
         if (this.isCurrentNodeMaster()) {
             // routing algorithm and forward
-
-            val node = this.nodes.get(topicName.hashCode() % nodes.size)
+            val node = this.nodes[topicName.hashCode() % nodes.size]
             println(LocalDate.now().toString() + " Routing topic to node: ${node.id}")
             val client = getClientForNode(node)
             client.createTopicInNode(ProducerController.TopicCreationForm(topicName))
+            topicRouter.saveTopicToNodeMapping(topicName, node)
         } else {
             // Forward request to leader
             val client = getClientForNode(getMaster())

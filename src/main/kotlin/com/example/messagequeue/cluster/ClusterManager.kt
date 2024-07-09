@@ -75,7 +75,8 @@ class ClusterManager(
             }
 
             // routing algorithm and forward
-            val node = this.nodes[topicName.hashCode() % nodes.size]
+            val availableNodes = nodes.filter { it.isAvailable() }
+            val node = availableNodes[topicName.hashCode() % availableNodes.size]
             println(LocalDate.now().toString() + " Routing topic to node: ${node.id}")
             val client = getClientForNode(node)
             client.createTopicInNode(ProducerController.TopicCreationForm(topicName))

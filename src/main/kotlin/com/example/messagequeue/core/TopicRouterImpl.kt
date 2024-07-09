@@ -15,4 +15,8 @@ class TopicRouterImpl : TopicRouter {
         topicToNodeMap[topicId] = node
         topicToNodeMap.forEach { (key, value) -> println("Key: $key, Value: $value") }
     }
+
+    override fun doesTopicExist(topicId: String): Boolean {
+        return topicToNodeMap.containsKey(topicId)
+    }
 }

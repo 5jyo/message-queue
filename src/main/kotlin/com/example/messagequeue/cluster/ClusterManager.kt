@@ -69,6 +69,11 @@ class ClusterManager(
     // method to add topic into cluster
     fun routingTopic(topicName: String) {
         if (this.isCurrentNodeMaster()) {
+            if (topicRouter.doesTopicExist(topicName)) {
+                println(LocalDate.now().toString() + " Topic already exists in cluster")
+                throw IllegalArgumentException("Topic already exists in cluster")
+            }
+
             // routing algorithm and forward
             val node = this.nodes[topicName.hashCode() % nodes.size]
             println(LocalDate.now().toString() + " Routing topic to node: ${node.id}")

@@ -12,5 +12,5 @@ POST http://localhost:8080/topics
 Content-Type: application/json
 
 {
-  "topicId": "test"
+  "topicId": "test2"
 }

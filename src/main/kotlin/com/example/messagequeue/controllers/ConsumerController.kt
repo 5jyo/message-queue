@@ -1,38 +1,35 @@
 package com.example.messagequeue.controllers
 
+import com.example.messagequeue.cluster.ClusterManager
 import com.example.messagequeue.core.TopicManager
 import com.example.messagequeue.model.Event
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 
 @RestController
 class ConsumerController(
     private val topicManager: TopicManager,
+    private val clusterManager: ClusterManager,
 ) {
     @PostMapping("/consume")
     fun consume(
         @RequestBody request: ConsumeRequest,
-    ): Event {
-        return topicManager.consume(
+    ): Event =
+        clusterManager.consumeEvent(
             topicId = request.topicId,
-            consumerId = request.consumerId
-        ) ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "No message to consume"
+            consumerId = request.consumerId,
         )
-    }
 
     @PostMapping("/commit")
     fun commit(
         @RequestBody request: CommitRequest,
     ): CommitResponse {
-        val next = topicManager.commit(
-            topicId = request.topicId,
-            consumerId = request.consumerId,
-        )
+        val next =
+            clusterManager.commitEvent(
+                topicId = request.topicId,
+                consumerId = request.consumerId,
+            )
 
         return CommitResponse(
             topicId = request.topicId,

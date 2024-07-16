@@ -120,6 +120,74 @@ class ClusterManager(
         }
     }
 
+    fun consumeEvent(
+        topicId: String,
+        consumerId: String,
+    ): Event {
+        val event: Event?
+        if (!this.isCurrentNodeMaster()) {
+            val node = getMaster()
+            val targetNodeBaseUrl = "${node.host}:${node.port}"
+            event =
+                eventClient.consumeRoute(
+                    factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                    consumeRequest =
+                        EventClient.ConsumeRouteRequest(
+                            topicId,
+                            consumerId,
+                        ),
+                )
+        } else {
+            val node = topicRouter.getNode(topicId)
+            val targetNodeBaseUrl = "${node.host}:${node.port}"
+            event =
+                eventClient.clusterConsume(
+                    factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                    consumeRequest =
+                        EventClient.ConsumeRouteRequest(
+                            topicId,
+                            consumerId,
+                        ),
+                )
+        }
+        return event
+    }
+
+    fun commitEvent(
+        topicId: String,
+        consumerId: String,
+    ): Int {
+        val commitId: Int
+        if (!this.isCurrentNodeMaster()) {
+            val node = getMaster()
+            val targetNodeBaseUrl = "${node.host}:${node.port}"
+            commitId =
+                eventClient
+                    .commitRoute(
+                        factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                        commitRequest =
+                            EventClient.CommitRouteRequest(
+                                topicId,
+                                consumerId,
+                            ),
+                    ).next
+        } else {
+            val node = topicRouter.getNode(topicId)
+            val targetNodeBaseUrl = "${node.host}:${node.port}"
+            commitId =
+                eventClient
+                    .clusterCommit(
+                        factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
+                        commitRequest =
+                            EventClient.CommitRouteRequest(
+                                topicId,
+                                consumerId,
+                            ),
+                    ).next
+        }
+        return commitId
+    }
+
     fun createEvent(event: Event) {
         topicManager.produce(event)
     }

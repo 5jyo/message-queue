@@ -7,9 +7,9 @@ import org.springframework.web.client.support.RestClientAdapter
 import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 @Configuration
-class TopicClientConfiguration {
+class EventClientConfiguration {
     @Bean
-    fun topicClient(): EventClient {
+    fun eventClient(): EventClient {
         val client =
             RestClient
                 .builder()

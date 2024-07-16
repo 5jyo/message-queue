@@ -1,8 +1,15 @@
 package com.example.messagequeue.cluster
 
+import com.example.messagequeue.client.TopicClient
+import com.example.messagequeue.controllers.ProducerController
 import com.example.messagequeue.core.TopicManager
+import com.example.messagequeue.core.TopicRouter
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.support.RestClientAdapter
+import org.springframework.web.service.invoker.HttpServiceProxyFactory
 
 // 역할: Node 주소와 Status를 관리
 // 상호작용
@@ -13,9 +20,12 @@ import org.springframework.stereotype.Service
 class ClusterManager(
     clusterProperties: ClusterProperties,
     private val topicManager: TopicManager,
+    private val topicClient: TopicClient,
+    private val topicRouter: TopicRouter,
     @Value("\${node.id}") private val currentNodeId: String,
 ) {
     private val nodes: List<Node> = clusterProperties.nodes.map { Node.from(it) }
+    private val log = KotlinLogging.logger {}
 
     class NodeNotFoundException(
         message: String,
@@ -46,21 +56,50 @@ class ClusterManager(
     // TEMP
     fun reportStatus() {
         nodes.forEach {
-            println(it)
+            // println(it)
         }
     }
 
+    // method to add topic in node
     fun createTopic(topicName: String) {
         // TODO: Global topic manager?
         topicManager.addTopic(topicName)
     }
 
+    // method to add topic into cluster
     fun routingTopic(topicName: String) {
         if (this.isCurrentNodeMaster()) {
+            if (topicRouter.doesTopicExist(topicName)) {
+                log.info("Topic already exists in cluster")
+                throw IllegalArgumentException("Topic already exists in cluster")
+            }
+
             // routing algorithm and forward
+            val availableNodes = nodes.filter { it.isAvailable() }
+            val node = availableNodes[topicName.hashCode() % availableNodes.size]
+            log.info("Routing topic to node: ${node.id}")
+
+            val client = getClientForNode(node)
+            client.createTopicInNode(ProducerController.TopicCreationForm(topicName))
+            topicRouter.saveTopicToNodeMapping(topicName, node)
         } else {
-            // forward to master
+            // Forward request to leader
+            val client = getClientForNode(getMaster())
+            log.info("Forwarding topic to leader: ${getMaster().id}")
+            client.createTopicInCluster(ProducerController.TopicCreationForm(topicName))
         }
+    }
+
+    private fun getClientForNode(node: Node): TopicClient {
+        val client =
+            RestClient
+                .builder()
+                .baseUrl("http://127.0.0.1:${node.port}")
+                .build()
+        val adapter = RestClientAdapter.create(client)
+        val factory = HttpServiceProxyFactory.builderFor(adapter).build()
+
+        return factory.createClient(TopicClient::class.java)
     }
 
     data class NodeAddress(

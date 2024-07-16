@@ -20,6 +20,14 @@ class ProducerController(
         return topicManager.produce(event)
     }
 
+    @PostMapping("/distributed/produce")
+    fun produceDistributed(
+        @RequestBody requestForm: RequestForm,
+    ) {
+        val event = Event.create(requestForm.topicId, requestForm.message)
+        return clusterManager.routingEvent(event)
+    }
+
     @PostMapping("/topics")
     fun createTopic(
         @RequestBody topicCreationForm: TopicCreationForm,

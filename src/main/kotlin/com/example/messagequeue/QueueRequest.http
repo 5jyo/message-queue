@@ -1,11 +1,57 @@
 ###
-POST http://localhost:8080/enqueue
+POST http://localhost:8080/topics
 Content-Type: application/json
 
 {
-  "message": "test"
+  "topicId": "1-4"
 }
 
 ###
-GET http://localhost:8080/dequeue
+POST http://localhost:8080/distributed/produce
 Content-Type: application/json
+
+{
+  "topicId": "1-4",
+  "message": "dasi123"
+}
+
+<> 2024-07-16T202732.500.json
+
+###
+POST http://localhost:8080/consume
+Content-Type: application/json
+
+{
+  "topicId": "1-4",
+  "consumerId": "아무거나"
+}
+
+###
+POST http://localhost:8080/commit
+Content-Type: application/json
+
+{
+  "topicId": "1-4",
+  "consumerId": "아무거나"
+}
+
+<> 2024-07-16T203356.200.json
+<> 2024-07-16T203354.200.json
+<> 2024-07-16T203353-1.200.json
+<> 2024-07-16T203353.200.json
+<> 2024-07-16T203345.200.json
+<> 2024-07-16T203340.200.json
+<> 2024-07-16T203257.200.json
+<> 2024-07-16T203105.500.json
+
+###
+POST http://localhost:8080/commit
+Content-Type: application/json
+
+{
+  "topicId": "1-2",
+  "consumerId": "아무거나"
+}
+
+<> 2024-07-16T203359.200.json
+<> 2024-07-16T203312.200.json

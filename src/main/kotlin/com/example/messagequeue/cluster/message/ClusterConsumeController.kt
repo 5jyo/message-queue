@@ -1,6 +1,5 @@
-package com.example.messagequeue.controllers
+package com.example.messagequeue.cluster.message
 
-import com.example.messagequeue.cluster.ClusterManager
 import com.example.messagequeue.core.TopicManager
 import com.example.messagequeue.model.Event
 import org.springframework.web.bind.annotation.PostMapping
@@ -8,35 +7,31 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ConsumerController(
+class ClusterConsumeController(
     private val topicManager: TopicManager,
-    private val clusterManager: ClusterManager,
 ) {
-    @PostMapping("/consume")
+    @PostMapping("/cluster/consume")
     fun consume(
         @RequestBody request: ConsumeRequest,
     ): Event =
-        clusterManager.consumeEvent(
-            topicId = request.topicId,
-            consumerId = request.consumerId,
-        )
+        topicManager.consume(
+            request.topicId,
+            request.consumerId,
+        ) ?: throw RuntimeException("can't consume")
 
-    @PostMapping("/commit")
+    @PostMapping("/cluster/commit")
     fun commit(
         @RequestBody request: CommitRequest,
-    ): CommitResponse {
-        val next =
-            clusterManager.commitEvent(
-                topicId = request.topicId,
-                consumerId = request.consumerId,
-            )
-
-        return CommitResponse(
+    ): CommitResponse =
+        CommitResponse(
             topicId = request.topicId,
             consumerId = request.consumerId,
-            next = next,
+            next =
+                topicManager.commit(
+                    topicId = request.topicId,
+                    consumerId = request.consumerId,
+                ),
         )
-    }
 
     data class CommitRequest(
         val topicId: String,

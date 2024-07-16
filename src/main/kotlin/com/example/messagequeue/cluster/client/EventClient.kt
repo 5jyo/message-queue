@@ -17,4 +17,45 @@ interface EventClient {
         factory: UriBuilderFactory,
         @RequestBody event: Event,
     )
+
+    @PostExchange("/consume")
+    fun consumeRoute(
+        factory: UriBuilderFactory,
+        @RequestBody consumeRequest: ConsumeRouteRequest,
+    ): Event
+
+    @PostExchange("/cluster/consume")
+    fun clusterConsume(
+        factory: UriBuilderFactory,
+        @RequestBody consumeRequest: ConsumeRouteRequest,
+    ): Event
+
+    @PostExchange("/commit")
+    fun commitRoute(
+        factory: UriBuilderFactory,
+        @RequestBody commitRequest: CommitRouteRequest,
+    ): CommitRouteResponse
+
+    @PostExchange("/cluster/commit")
+    fun clusterCommit(
+        factory: UriBuilderFactory,
+        @RequestBody commitRequest: CommitRouteRequest,
+    ): CommitRouteResponse
+
+    data class ConsumeRouteRequest(
+        val topicId: String,
+        val consumerId: String,
+    )
+
+    data class CommitRouteRequest(
+        val topicId: String,
+        val consumerId: String,
+    )
+
+    data class CommitRouteResponse(
+        val topicId: String,
+        val consumerId: String,
+        val message: String = "OK",
+        val next: Int,
+    )
 }

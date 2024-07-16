@@ -30,14 +30,12 @@ class HeartbeatScheduler(
                     clusterManager.setNodeToHealthy(address.id)
                 }
         }
-
-        clusterManager.reportStatus()
     }
 
     private fun checkHealth(it: ClusterManager.NodeAddress): Result<Unit> =
         runCatching {
             RestTemplate()
-                .getForEntity("http://${it.host}:${it.port}/cluster/health", String::class.java)
+                .getForEntity("${it.host}:${it.port}/cluster/health", String::class.java)
                 .let {
                     if (it.statusCode != HttpStatus.OK) {
                         throw HeartbeatFailureException()

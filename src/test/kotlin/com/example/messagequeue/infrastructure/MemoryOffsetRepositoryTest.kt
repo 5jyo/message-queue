@@ -2,7 +2,7 @@ package com.example.messagequeue.infrastructure
 
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class OffsetManagerTest {
     @InjectMockKs
     private lateinit var offsetManager: OffsetManager
+
     @MockK
     private lateinit var offsetRepository: OffsetRepository
 

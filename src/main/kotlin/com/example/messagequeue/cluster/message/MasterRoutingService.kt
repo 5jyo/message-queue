@@ -1,15 +1,13 @@
 package com.example.messagequeue.cluster.message
 
-import com.example.messagequeue.cluster.ClusterManager
-import com.example.messagequeue.cluster.Node
 import com.example.messagequeue.core.TopicRouter
 import com.example.messagequeue.model.Event
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 
 @Component
-class MasterRoutingService (
-    private val topicRouter: TopicRouter
+class MasterRoutingService(
+    private val topicRouter: TopicRouter,
 ) : RoutingService {
 
     override fun routeConsume(topicId: String, consumerId: String): Event {

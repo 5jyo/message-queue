@@ -6,8 +6,8 @@
 
 ```bash
 ./gradlew bootRun --args='--server.port=8080 --node.id=1' # leader
-./gradlew bootRun --args='--server.port=8081 --node.id=2' # follower
-./gradlew bootRun --args='--server.port=8082 --node.id=3' # follower
+./gradlew bootRun --args='--server.port=8081 --node.id=2' # follower 1
+./gradlew bootRun --args='--server.port=8082 --node.id=3' # follower 2
 ```
 
 # 프로젝트 개요

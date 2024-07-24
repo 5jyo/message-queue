@@ -132,10 +132,10 @@ class ClusterManager(
                 eventClient.consumeRoute(
                     factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
                     consumeRequest =
-                        EventClient.ConsumeRouteRequest(
-                            topicId,
-                            consumerId,
-                        ),
+                    EventClient.ConsumeRouteRequest(
+                        topicId,
+                        consumerId,
+                    ),
                 )
         } else {
             val node = topicRouter.getNode(topicId)
@@ -144,10 +144,10 @@ class ClusterManager(
                 eventClient.clusterConsume(
                     factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
                     consumeRequest =
-                        EventClient.ConsumeRouteRequest(
-                            topicId,
-                            consumerId,
-                        ),
+                    EventClient.ConsumeRouteRequest(
+                        topicId,
+                        consumerId,
+                    ),
                 )
         }
         return event
@@ -166,10 +166,10 @@ class ClusterManager(
                     .commitRoute(
                         factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
                         commitRequest =
-                            EventClient.CommitRouteRequest(
-                                topicId,
-                                consumerId,
-                            ),
+                        EventClient.CommitRouteRequest(
+                            topicId,
+                            consumerId,
+                        ),
                     ).next
         } else {
             val node = topicRouter.getNode(topicId)
@@ -179,10 +179,10 @@ class ClusterManager(
                     .clusterCommit(
                         factory = DefaultUriBuilderFactory(targetNodeBaseUrl),
                         commitRequest =
-                            EventClient.CommitRouteRequest(
-                                topicId,
-                                consumerId,
-                            ),
+                        EventClient.CommitRouteRequest(
+                            topicId,
+                            consumerId,
+                        ),
                     ).next
         }
         return commitId

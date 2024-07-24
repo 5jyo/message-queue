@@ -10,18 +10,18 @@ management:
 
 cluster:
   nodes:
-  - id: 1
-    role: LEADER
-    host: http://127.0.0.1
-    port: 8080
-  - id: 2
-    role: FOLLOWER
-    host: http://127.0.0.1
-    port: 8081
-  - id: 3
-    role: FOLLOWER
-    host: http://127.0.0.1
-    port: 8082
+    - id: 1
+      role: LEADER
+      host: http://127.0.0.1
+      port: 8080
+    - id: 2
+      role: FOLLOWER
+      host: http://127.0.0.1
+      port: 8081
+    - id: 3
+      role: FOLLOWER
+      host: http://127.0.0.1
+      port: 8082
 
 node:
   id: 1

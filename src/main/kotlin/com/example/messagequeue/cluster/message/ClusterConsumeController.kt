@@ -27,10 +27,10 @@ class ClusterConsumeController(
             topicId = request.topicId,
             consumerId = request.consumerId,
             next =
-                topicManager.commit(
-                    topicId = request.topicId,
-                    consumerId = request.consumerId,
-                ),
+            topicManager.commit(
+                topicId = request.topicId,
+                consumerId = request.consumerId,
+            ),
         )
 
     data class CommitRequest(

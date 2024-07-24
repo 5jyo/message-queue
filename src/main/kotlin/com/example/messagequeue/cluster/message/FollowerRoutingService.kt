@@ -7,7 +7,7 @@ import org.springframework.web.client.RestClient
 
 @Component
 class FollowerRoutingService(
-    private val clusterManager: ClusterManager
+    private val clusterManager: ClusterManager,
 ) : RoutingService {
     override fun routeConsume(topicId: String, consumerId: String): Event {
         return internalCall(clusterManager.getMaster().host, "/cluster/consume", topicId, consumerId)

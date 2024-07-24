@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class OffsetManager(
-    private val offsetRepository: OffsetRepository
+    private val offsetRepository: OffsetRepository,
 ) {
 
     fun increment(consumerId: String, topicId: String): Int {
